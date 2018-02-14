@@ -60,7 +60,43 @@ describe('CordovaConfigWebpackPlugin specs: ', () => {
     expect(parseFile().find('access[@origin]').attrib.origin).to.equal(fakeOptions.access.origin)
   })
 
-  it.only('Should launch error if not found field in config.xml', () => {
+  it('Should modify several attributes for each tag', () => {
+    const fakeOptions = {
+      widget: {
+        id: 'testid',
+        version: '1.1.0'
+      },
+      author: {
+        email: 'test@email.com',
+        href: 'test.com'
+      }
+    }
+    const cordovaConfigWebpackPlugin = CordovaConfigWebpackPlugin(fakeOptions)
+    cordovaConfigWebpackPlugin.apply(MockCompiler)
+    expect(parseFile().getroot().attrib.id).to.equal(fakeOptions.widget.id)
+    expect(parseFile().getroot().attrib.version).to.equal(fakeOptions.widget.version)
+    expect(parseFile().find('author').attrib.email).to.equal(fakeOptions.author.email)
+    expect(parseFile().find('author').attrib.href).to.equal(fakeOptions.author.href)
+  })
+
+  it('Should modify the content of tag', () => {
+    const fakeOptions = {
+      author: {
+        email: 'test@email.com',
+        text: 'author text'
+      },
+      name: {
+        text: 'testtext'
+      }
+    }
+    const cordovaConfigWebpackPlugin = CordovaConfigWebpackPlugin(fakeOptions)
+    cordovaConfigWebpackPlugin.apply(MockCompiler)
+    expect(parseFile().find('author').attrib.email).to.equal(fakeOptions.author.email)
+    expect(parseFile().find('author').text).to.equal(fakeOptions.author.text)
+    expect(parseFile().find('name').text).to.equal(fakeOptions.name.text)
+  })
+
+  it('Should launch error if not found field in config.xml', () => {
     const fakeOptions = {
       fake: {
         origin: 'fakeorigin'
