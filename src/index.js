@@ -34,21 +34,25 @@ function CordovaConfigWebpackPlugin (options) {
           if (typeof options[tag] !== 'object') {
             throw new Error(`Not config options defined correctly!! See: https://github.com/michogar/CordovaConfigWebpackPlugin/blob/master/README.md`)
           } else {
-            const FIRST = 0
-            const attr = Object.keys(options[tag])[FIRST]
-            const value = options[tag][attr]
-            const toFind = `${tag}[@${attr}]`
-            if (tag === 'widget') {
-              xml.getroot().attrib[attr] = value
-            } else {
-              let contentTag = xml.find(toFind)
-              console.log(contentTag)
-              if (contentTag) {
-                contentTag.attrib[attr] = value
+            Object.keys(options[tag]).forEach(attr => {
+              const value = options[tag][attr]
+              // const toFind = `${tag}[@${attr}]`
+              const toFind = `${tag}`
+              if (tag === 'widget') {
+                xml.getroot().attrib[attr] = value
               } else {
-                throw new Error(`No tag: ${tag} found!!`)
+                let contentTag = xml.find(toFind)
+                if (contentTag) {
+                  if (attr === 'text') {
+                    contentTag.text = value
+                  } else {
+                    contentTag.attrib[attr] = value
+                  }
+                } else {
+                  throw new Error(`No tag: ${tag} found!!`)
+                }
               }
-            }
+            })
           }
         })
       } else {
